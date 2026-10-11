@@ -102,6 +102,7 @@ const OnlineAPI = {
   async init() {
     await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js'; s.onload = res; s.onerror = () => rej(new Error('Não consegui carregar o Supabase.')); document.head.appendChild(s); });
     const url = CFG.SUPABASE_URL.trim().replace(/\/(rest|auth)\/v1\/?$/, '').replace(/\/+$/, '');
+    EFFECTIVE_URL = url;
     sb = window.supabase.createClient(url, CFG.SUPABASE_ANON_KEY.trim());
   },
   _u(user) { return user ? { id: user.id, name: user.user_metadata?.username || (user.email || '').split('@')[0] } : null; },
@@ -130,6 +131,7 @@ const OnlineAPI = {
   },
 };
 let API = LocalAPI;
+let EFFECTIVE_URL = '';
 
 /* ---------- state ---------- */
 const S = { user: null, items: [], trades: [], view: 'dash', range: '7', q: '', give: {}, recv: {}, partner: '', note: '', hq: '' };
@@ -175,7 +177,7 @@ function renderAuth(err = '') {
       <div class="neg" id="autherr" style="min-height:18px;margin-bottom:8px">${esc(err)}</div>
       <button class="btn pri" style="width:100%">${authMode === 'login' ? 'Entrar' : 'Criar conta'}</button>
     </form>
-    <p class="mut" style="text-align:center;font-size:12px;margin:14px 0 0">${ONLINE ? 'Conta online: seus dados ficam salvos na nuvem.' : 'Modo local: contas e dados ficam neste navegador.'}</p>
+    <p class="mut" style="text-align:center;font-size:12px;margin:14px 0 0">${ONLINE ? 'Conta online · ' + esc(EFFECTIVE_URL.replace('https://','')) : 'Modo local: contas e dados ficam neste navegador.'}</p>
   </div></div>`;
 }
 
