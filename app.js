@@ -101,7 +101,8 @@ const OnlineAPI = {
   mode: 'online',
   async init() {
     await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js'; s.onload = res; s.onerror = () => rej(new Error('Não consegui carregar o Supabase.')); document.head.appendChild(s); });
-    sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+    const url = CFG.SUPABASE_URL.trim().replace(/\/(rest|auth)\/v1\/?$/, '').replace(/\/+$/, '');
+    sb = window.supabase.createClient(url, CFG.SUPABASE_ANON_KEY.trim());
   },
   _u(user) { return user ? { id: user.id, name: user.user_metadata?.username || (user.email || '').split('@')[0] } : null; },
   async session() { const { data } = await sb.auth.getSession(); return this._u(data.session?.user); },
